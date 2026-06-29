@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="IDENTIO — 포인트앤클릭 탈출 게임">
+  <title>IDENTIO</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+  <div id="wrapper">
+    <div id="game">
+
+      <!-- ══════════════════════════════
+         ① LOADING SCENE (로딩 화면)
+    ══════════════════════════════ -->
+    <div id="scene-loading" class="scene active">
+      <!-- 0초 시점 로딩 전 배경 -->
+      <img class="loading-bg-zero" src="01_intro/intro_add_zero.png" alt="로딩 전 배경">
+      <!-- 2초 동안 차오르는 로딩 완료 배경 -->
+      <img id="loading-bg-full" class="loading-bg-full" src="01_intro/intro_add_full.png" alt="로딩 완료 배경">
+      <!-- 시작 버튼 -->
+      <img id="loading-button" class="loading-button" src="01_intro/intro_add_full_button.png" alt="시작 버튼">
+    </div>
+
+    <!-- ══════════════════════════════
+         ② INTRO SCENE (영상 루프)
+    ══════════════════════════════ -->
+    <div id="scene-intro" class="scene">
+        <video id="intro-video" src="01_intro/Intro.mp4" playsinline preload="auto" autoplay loop></video>
+        <!-- 투명 시작 버튼 클릭 영역 -->
+        <div id="intro-click-zone"></div>
+      </div>
+
+      <!-- ══════════════════════════════
+           ② STORY SCENE
+      ══════════════════════════════ -->
+      <div id="scene-story" class="scene">
+        <img id="story-img" src="" alt="스토리">
+        <div id="story-tap" class="tap-layer"></div>
+      </div>
+
+      <!-- ══════════════════════════════
+           ③ GAME SCENE (방 탐색)
+      ══════════════════════════════ -->
+      <div id="scene-game" class="scene">
+        <img id="room-bg" src="" alt="방 배경">
+        <!-- 힌트 누끼 오버레이 (배경 위, 핫스팟 아래) -->
+        <div id="hint-layer"></div>
+        <!-- 단서/이동 클릭 영역 -->
+        <div id="hotspot-layer"></div>
+        
+        <!-- 미션 안내 오버레이 (최초 게임 시작 시에만 활성화) -->
+        <div id="mission-overlay" class="hidden">
+          <img src="03_game/conference_room/bg_mission.png" alt="미션 안내">
+        </div>
+
+        <!-- 단서 팝업 -->
+        <div id="clue-popup" class="hidden">
+          <img id="popup-img" src="" alt="단서">
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           ④ MONITOR SCENE (비밀번호 입력)
+      ══════════════════════════════ -->
+      <div id="scene-monitor" class="scene">
+        <!-- 배경 이미지 -->
+        <img src="03_game/monitor/bg_monitor.png" alt="모니터">
+
+        <!-- 뒤로 가기 버튼 영역 (bg 이미지의 왼쪽 화살표 위치) -->
+        <div id="monitor-nav-left"
+             style="position:absolute; left:0; top:47%; width:8%; height:12%; cursor:pointer; z-index:10;">
+        </div>
+
+        <!-- 비밀번호 입력 영역 (bg 이미지의 입력창 위치) -->
+        <div id="pw-zone">
+          <span id="pw-display"></span>
+          <button id="pw-submit" title="확인">✓</button>
+        </div>
+
+        <!-- 키보드 오버레이 -->
+        <div id="keyboard-zone"></div>
+      </div>
+
+      <!-- ══════════════════════════════
+           ⑤ ENDING SCENE
+      ══════════════════════════════ -->
+      <div id="scene-ending" class="scene">
+        <video id="ending-video" playsinline preload="auto" loop></video>
+        <!-- 영상 안 버튼 위치에 투명 클릭 영역 -->
+        <div id="ending-click-zone" class="hidden"></div>
+      </div>
+
+      <!-- ══════════════════════════════
+           TIMER UI (게임/모니터 씬 공통)
+      ══════════════════════════════ -->
+      <div id="timer-ui" class="hidden">
+        <div id="timer-bar-layers">
+          <!-- 최하단: 비어있는 배경 바 -->
+          <img id="timer-bg" src="05_ui/timer_zero_box.png" alt="타이머 백그라운드">
+          <!-- 중간: 시간에 따라 깎이는 채워진 바 -->
+          <img id="timer-bar" src="05_ui/timer_full_box.png" alt="타이머 바">
+          <!-- 최상단: 고정된 프레임 테두리 -->
+          <img id="timer-frame" src="05_ui/timer_frame.png" alt="타이머 프레임">
+        </div>
+        <span id="timer-text">02:00</span>
+      </div>
+
+    </div><!-- /#game -->
+  </div><!-- /#wrapper -->
+
+  <!-- 게임 데이터 (좌표, 경로 등) -->
+  <script src="src/data.js?v=3"></script>
+  <!-- 게임 엔진 -->
+  <script src="src/main.js?v=3"></script>
+
+</body>
+</html>
