@@ -28,6 +28,7 @@ html, body {
   justify-content: center;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* 모바일 크롬/사파리 주소창을 제외한 실제 동적 높이 반영 */
   background: #0a0a0a;
 }
 
@@ -35,7 +36,9 @@ html, body {
 #game {
   position: relative;
   width: min(100vw, calc(100vh * 9 / 16));
+  width: min(100vw, calc(100dvh * 9 / 16));
   height: min(100vh, calc(100vw * 16 / 9));
+  height: min(100dvh, calc(100vw * 16 / 9));
   overflow: hidden;
   background: #000;
 }
