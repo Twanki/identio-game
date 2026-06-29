@@ -614,7 +614,7 @@
     if (room.monitorZone) {
       const mz = room.monitorZone;
       const zone = makeHotspot(mz.x, mz.y, mz.w, mz.h, 'monitor-zone', () => {
-        playSound(DATA.SFX.arrowClick);
+        playSound(DATA.SFX.popupClick);
         goToScene('monitor');
         initMonitor();
       });
@@ -775,7 +775,7 @@
     // 뒤로 버튼
     const navLeft = document.getElementById('monitor-nav-left');
     navLeft.onclick = () => {
-      playSound(DATA.SFX.arrowClick);
+      playSound(DATA.SFX.popupClick);
       goToScene('game');
     };
 
