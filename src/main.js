@@ -326,18 +326,12 @@
     goToScene('ending');
     el.endingVideo.play().catch(() => {});
 
-    // 영상이 한 바퀴 돌면 클릭 영역 활성화
-    // (첫 루프가 끝나는 시점: currentTime이 0에 가깝게 다시 줄어들 때)
+    // 오클릭 방지를 위해 엔딩 진입 후 2.5초간 버튼을 잠그고, 이후 활성화
     el.endingClickZone.classList.add('hidden');
-    let firstLoop = true;
-    function onTimeUpdate() {
-      if (el.endingVideo.currentTime > 0.5) firstLoop = false;
-      if (!firstLoop && el.endingVideo.currentTime < 0.3) {
-        el.endingClickZone.classList.remove('hidden');
-        el.endingVideo.removeEventListener('timeupdate', onTimeUpdate);
-      }
-    }
-    el.endingVideo.addEventListener('timeupdate', onTimeUpdate);
+    setTimeout(() => {
+      // 엔딩 씬이 유지되고 있는 상태일 때만 버튼 해제
+      el.endingClickZone.classList.remove('hidden');
+    }, 2500);
   }
 
   /* ----------------------------------------------------------
