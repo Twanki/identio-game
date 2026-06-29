@@ -98,10 +98,7 @@
         currentAudioTimeout = null;
       }
       
-      // 브라우저의 강력한 미디어 캐시를 뚫기 위해 시간 초(timestamp)를 추가하여 강제 갱신 로드
-      const cacheBustSrc = src.includes('?') 
-        ? `${src}&t=${new Date().getTime()}` 
-        : `${src}?t=${new Date().getTime()}`;
+      const cacheBustSrc = src;
 
       if (!_audioCache[src]) {
         _audioCache[src] = new Audio(cacheBustSrc);
@@ -186,9 +183,7 @@
 
   function playWarningSound() {
     const src = DATA.SFX.timerWarning;
-    const cacheBustSrc = src.includes('?') 
-      ? `${src}&t=${new Date().getTime()}` 
-      : `${src}?t=${new Date().getTime()}`;
+    const cacheBustSrc = src;
 
     if (!warningAudio) {
       warningAudio = new Audio(cacheBustSrc);
@@ -218,9 +213,7 @@
     stopBGM();
 
     const src = DATA.SFX.gameBGM;
-    const cacheBustSrc = src.includes('?') 
-      ? `${src}&t=${new Date().getTime()}` 
-      : `${src}?t=${new Date().getTime()}`;
+    const cacheBustSrc = src;
 
     if (!bgmAudio) {
       bgmAudio = new Audio(cacheBustSrc);
@@ -388,10 +381,87 @@
   /* ==========================================================
      LOADING SCENE (로딩 화면)
   ========================================================== */
+  // 게임에 필요한 모든 리소스 목록 (사전 로딩용)
+  const PRELOAD_ASSETS = {
+    images: [
+      // 배경
+      '03_game/conference_room/bg_conference_room.png',
+      '03_game/conference_room/bg_mission.png',
+      '03_game/lounge/bg_lounge_2.png?v=3',
+      '03_game/desk/bg_desk.png',
+      '03_game/monitor/bg_monitor.png',
+      // 스토리
+      '02_story/scene_01.png',
+      '02_story/scene_02.png',
+      '02_story/scene_03.png',
+      '02_story/scene_04.png',
+      '02_story/scene_05.png',
+      // UI
+      '05_ui/timer_frame.png',
+      '05_ui/timer_frame_warning.png',
+      '05_ui/timer_full.png',
+      '05_ui/timer_full_box.png',
+      '05_ui/timer_warning.png',
+      '05_ui/timer_zero.png',
+      '05_ui/timer_zero_box.png',
+      // 단서 팝업
+      '03_game/conference_room/clues/popup_conference_room_book.png',
+      '03_game/conference_room/clues/popup_conference_room_chair.png',
+      '03_game/conference_room/clues/popup_conference_room_flower_pot.png',
+      '03_game/conference_room/clues/popup_conference_room_frame.png',
+      '03_game/lounge/clues/popup_lounge_macbook.png',
+      '03_game/lounge/clues/popup_lounge_mini_chair.png',
+      '03_game/lounge/clues/popup_lounge_poster_1.png',
+      '03_game/desk/clues/popup_desk_goldbar.png',
+      '03_game/desk/clues/popup_desk_note.png',
+      '03_game/desk/clues/popup_desk_wire.png',
+      // 힌트 누끼
+      '06_hint/conference_room/hint_book.png',
+      '06_hint/conference_room/hint_chair.png',
+      '06_hint/conference_room/hint_flower_pot.png',
+      '06_hint/conference_room/hint_frame.png',
+      '06_hint/lounge/hint_macbook.png',
+      '06_hint/lounge/hint_mini_chair.png',
+      '06_hint/lounge/hint_poster.png',
+      '06_hint/desk/hint_goldbar.png',
+      '06_hint/desk/hint_note.png',
+      '06_hint/desk/hint_wire.png',
+      '06_hint/desk/hint_monitor.png'
+    ],
+    audio: [
+      '07_audio/story/scene_01_whistle.mp3?v=3',
+      '07_audio/story/scene_02_kakaotalk.mp3?v=3',
+      '07_audio/story/scene_03_boss.mp3?v=3',
+      '07_audio/story/scene_05_sigh.mp3?v=3',
+      '07_audio/game/arrow_click.mp3?v=3',
+      '07_audio/game/popup_click.mp3?v=3',
+      '07_audio/game/time_warning.mp3?v=3',
+      '07_audio/game/password_wrong.mp3?v=3',
+      '07_audio/game/game_bg.mp3?v=3',
+      '07_audio/game/Oh.mp3',
+      '07_audio/game/wow.mp3'
+    ]
+  };
+
+  function preloadGameAssets() {
+    // 이미지 사전 로드
+    PRELOAD_ASSETS.images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+    // 오디오 사전 로드
+    PRELOAD_ASSETS.audio.forEach(src => {
+      const aud = new Audio(src);
+      aud.preload = 'auto';
+      aud.load();
+    });
+  }
+
   function initLoading() {
-    // 1단계: 로딩 요소 상태 초기화
+    // 1단계: 로딩 요소 상태 초기화 및 자원 사전 로딩 작동
     el.loadingBgFull.classList.remove('loaded');
     el.loadingButton.classList.remove('active');
+    preloadGameAssets();
 
     // 2단계: 2초 동안 가득 차는 로딩 바 가동
     setTimeout(() => {
