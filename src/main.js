@@ -323,15 +323,33 @@
 
     el.endingVideo.loop = true;
     el.endingVideo.src  = src;
-    el.endingVideo.muted = false; // 기본적으로 소리가 들리도록 시도
-    goToScene('ending');
-    
-    el.endingVideo.play().catch(() => {
-      // 시간 제한 아웃 등 사용자 조작 없는 시점에 브라우저가 사운드 자동 재생을 차단하면
-      // 무음(muted)으로 전환하여 영상이 멈추지 않고 강제로 돌아가도록 설정 (모바일 대응)
+
+    if (result === 'success') {
+      // 성공 시: 클릭 직후이므로 무음 없이 직접 사운드와 함께 재생
+      el.endingVideo.muted = false;
+      goToScene('ending');
+      el.endingVideo.play().catch(() => {
+        el.endingVideo.muted = true;
+        el.endingVideo.play().catch(() => {});
+      });
+    } else {
+      // 실패 시: 가만히 있다가 타이머 초과로 자동 전환되므로, 모바일 차단을 방지하기 위해 일단 무음(muted)으로 안전하게 시작
       el.endingVideo.muted = true;
+      goToScene('ending');
       el.endingVideo.play().catch(() => {});
-    });
+
+      // 실패 화면을 아무 곳이나 한 번 탭(터치)하면 음소거를 즉시 해제해주는 일회성 우회 리스너 등록
+      const unmuteEndingVideo = () => {
+        el.endingVideo.muted = false;
+        window.removeEventListener('click', unmuteEndingVideo);
+        window.removeEventListener('touchstart', unmuteEndingVideo);
+      };
+      window.addEventListener('click', unmuteEndingVideo);
+      window.addEventListener('touchstart', unmuteEndingVideo);
+      
+      // 혹시 리셋 등으로 씬을 빠져나갈 때 이벤트 리스너를 방해하지 않게 state에 함수 참조를 잠시 백업
+      state._unmuteEndingVideo = unmuteEndingVideo;
+    }
 
     // 오클릭 방지를 위해 엔딩 진입 후 2.5초간 버튼을 잠그고, 이후 활성화
     el.endingClickZone.classList.add('hidden');
@@ -367,6 +385,13 @@
     el.endingVideo.src = '';
     el.endingVideo.muted = false; // 음소거 상태 복구
     el.endingClickZone.classList.add('hidden');
+
+    // 일회성 음소거 해제 리스너가 살아있다면 제거
+    if (state._unmuteEndingVideo) {
+      window.removeEventListener('click', state._unmuteEndingVideo);
+      window.removeEventListener('touchstart', state._unmuteEndingVideo);
+      state._unmuteEndingVideo = null;
+    }
 
     el.introVideo.currentTime = 0;
     el.introVideo.pause();
@@ -457,6 +482,17 @@
       aud.preload = 'auto';
       aud.load();
     });
+
+    // 경고 알람 객체 미리 생성 (30초 시점 재생 차단 우회용)
+    if (!warningAudio) {
+      warningAudio = new Audio(DATA.SFX.timerWarning);
+      warningAudio.loop = true;
+    }
+    // BGM 객체 미리 생성
+    if (!bgmAudio) {
+      bgmAudio = new Audio(DATA.SFX.gameBGM);
+      bgmAudio.loop = true;
+    }
   }
 
   function initLoading() {
