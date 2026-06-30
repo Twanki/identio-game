@@ -142,11 +142,17 @@ window.GAME_DATA = {
           x: 18, y: 55, w: 20, h: 18, // 서류뭉치와 분리하여 18%부터 시작
           popup: '03_game/desk/clues/popup_desk_wire.png',
         },
+        {
+          id: 'toy',
+          x: 45.4, y: 18.2, w: 10.6, h: 1.9,
+          popup: '03_game/desk/clues/popup_desk_toy.png',
+        },
       ],
       hints: [
         '06_hint/desk/hint_goldbar.png',
         '06_hint/desk/hint_note.png',
         '06_hint/desk/hint_wire.png',
+        '06_hint/desk/hint_toy.png',
       ],
       // 모니터 전용 힌트 (흰색 스트로크 깜빡임 효과)
       monitorHint: '06_hint/desk/hint_monitor.png',

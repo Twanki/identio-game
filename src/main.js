@@ -433,6 +433,7 @@
       '03_game/desk/clues/popup_desk_goldbar.png',
       '03_game/desk/clues/popup_desk_note.png',
       '03_game/desk/clues/popup_desk_wire.png',
+      '03_game/desk/clues/popup_desk_toy.png',
       // 힌트 누끼
       '06_hint/conference_room/hint_book.png',
       '06_hint/conference_room/hint_chair.png',
@@ -444,6 +445,7 @@
       '06_hint/desk/hint_goldbar.png',
       '06_hint/desk/hint_note.png',
       '06_hint/desk/hint_wire.png',
+      '06_hint/desk/hint_toy.png',
       '06_hint/desk/hint_monitor.png'
     ],
     audio: [
