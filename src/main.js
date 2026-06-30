@@ -323,22 +323,15 @@
 
     el.endingVideo.loop = true;
     el.endingVideo.src  = src;
+    el.endingVideo.muted = false;
+    goToScene('ending');
 
-    if (result === 'success') {
-      // 성공 시: 클릭 직후이므로 무음 없이 직접 사운드와 함께 재생
-      el.endingVideo.muted = false;
-      goToScene('ending');
-      el.endingVideo.play().catch(() => {
-        el.endingVideo.muted = true;
-        el.endingVideo.play().catch(() => {});
-      });
-    } else {
-      // 실패 시: 가만히 있다가 타이머 초과로 자동 전환되므로, 모바일 차단을 방지하기 위해 일단 무음(muted)으로 안전하게 시작
+    // YES 버튼 클릭 시 이미 잠금 해제(unlock)된 비디오이므로 소리 포함 재생을 시도
+    el.endingVideo.play().catch(() => {
+      // 혹시 그래도 차단된 경우: 무음으로 영상이라도 강제 재생 후, 터치 시 음소거 해제
       el.endingVideo.muted = true;
-      goToScene('ending');
       el.endingVideo.play().catch(() => {});
 
-      // 실패 화면을 아무 곳이나 한 번 탭(터치)하면 음소거를 즉시 해제해주는 일회성 우회 리스너 등록
       const unmuteEndingVideo = () => {
         el.endingVideo.muted = false;
         window.removeEventListener('click', unmuteEndingVideo);
@@ -346,10 +339,8 @@
       };
       window.addEventListener('click', unmuteEndingVideo);
       window.addEventListener('touchstart', unmuteEndingVideo);
-      
-      // 혹시 리셋 등으로 씬을 빠져나갈 때 이벤트 리스너를 방해하지 않게 state에 함수 참조를 잠시 백업
       state._unmuteEndingVideo = unmuteEndingVideo;
-    }
+    });
 
     // 오클릭 방지를 위해 엔딩 진입 후 2.5초간 버튼을 잠그고, 이후 활성화
     el.endingClickZone.classList.add('hidden');
@@ -518,6 +509,38 @@
       el.loadingButton.classList.remove('active');
       el.loadingButton.removeEventListener('click', onStartClick);
       el.loadingButton.removeEventListener('touchstart', onStartClick);
+
+      // ═══ 모바일 오디오 잠금 해제 (Unlock) ═══
+      // iOS/Android 브라우저는 "사용자 클릭 이벤트 내에서 .play()가 한 번이라도 호출된 Audio 객체"만
+      // 이후 타이머/비동기에서도 재생을 허용합니다.
+      // 여기서 볼륨 0으로 찰나 재생 → 즉시 정지하여, 30초 경고음과 엔딩 비디오의 잠금을 미리 풀어 놓습니다.
+      if (warningAudio) {
+        warningAudio.volume = 0;
+        warningAudio.play().then(() => {
+          warningAudio.pause();
+          warningAudio.currentTime = 0;
+          warningAudio.volume = 1.0;
+        }).catch(() => {});
+      }
+      if (bgmAudio) {
+        bgmAudio.volume = 0;
+        bgmAudio.play().then(() => {
+          bgmAudio.pause();
+          bgmAudio.currentTime = 0;
+          bgmAudio.volume = 0.35;
+        }).catch(() => {});
+      }
+      // 엔딩 비디오 엘리먼트도 잠금 해제 (무음 찰나 재생 후 즉시 정지)
+      el.endingVideo.muted = true;
+      el.endingVideo.src = '04_ending/fail.mp4';
+      el.endingVideo.play().then(() => {
+        el.endingVideo.pause();
+        el.endingVideo.currentTime = 0;
+        el.endingVideo.src = '';
+      }).catch(() => {
+        el.endingVideo.src = '';
+      });
+      // ═══ 잠금 해제 완료 ═══
 
       // 인트로 씬 진입
       goToScene('intro');
