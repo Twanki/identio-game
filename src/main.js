@@ -323,8 +323,15 @@
 
     el.endingVideo.loop = true;
     el.endingVideo.src  = src;
+    el.endingVideo.muted = false; // 기본적으로 소리가 들리도록 시도
     goToScene('ending');
-    el.endingVideo.play().catch(() => {});
+    
+    el.endingVideo.play().catch(() => {
+      // 시간 제한 아웃 등 사용자 조작 없는 시점에 브라우저가 사운드 자동 재생을 차단하면
+      // 무음(muted)으로 전환하여 영상이 멈추지 않고 강제로 돌아가도록 설정 (모바일 대응)
+      el.endingVideo.muted = true;
+      el.endingVideo.play().catch(() => {});
+    });
 
     // 오클릭 방지를 위해 엔딩 진입 후 2.5초간 버튼을 잠그고, 이후 활성화
     el.endingClickZone.classList.add('hidden');
@@ -358,6 +365,7 @@
 
     el.endingVideo.pause();
     el.endingVideo.src = '';
+    el.endingVideo.muted = false; // 음소거 상태 복구
     el.endingClickZone.classList.add('hidden');
 
     el.introVideo.currentTime = 0;
